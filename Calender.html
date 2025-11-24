@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialCraft Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5b6bf0;
+            --primary-light: #eef0ff;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            color: var(--dark);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            border-right: 1px solid var(--gray-light);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: var(--header-height);
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray);
+            border-left: 3px solid transparent;
+            margin: 2px 0;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+            text-decoration: none;
+        }
+
+        .menu-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-text {
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--dark);
+            cursor: pointer;
+            margin-right: 12px;
+            display: none;
+        }
+
+        .header-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .new-post-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(91, 107, 240, 0.3);
+            font-size: 0.85rem;
+        }
+
+        .new-post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(91, 107, 240, 0.4);
+        }
+
+        .profile-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .profile-dropdown:hover {
+            background-color: var(--primary-light);
+        }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .profile-arrow {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .profile-dropdown.active .profile-arrow {
+            transform: rotate(180deg);
+        }
+
+        .profile-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            padding: 8px 0;
+            margin-top: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 1px solid var(--gray-light);
+        }
+
+        .profile-dropdown.active .profile-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-menu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: var(--dark);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .profile-menu-item:hover {
+            background-color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        .profile-menu-item i {
+            width: 16px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        /* Calendar Container */
+        .calendar-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid var(--gray-light);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .calendar-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .view-toggle {
+            display: flex;
+            background-color: var(--light);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .view-toggle button {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .view-toggle button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .month-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .month-navigation button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .month-navigation button:hover {
+            background-color: var(--primary-light);
+        }
+
+        .current-month {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            padding: 0 20px 20px;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-light);
+            background-color: white;
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+
+        /* Month View */
+        .month-view {
+            display: none;
+        }
+
+        .month-view.active {
+            display: block;
+        }
+
+        .month-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background-color: var(--light);
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .day-header {
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-day {
+            min-height: 120px;
+            border-right: 1px solid var(--gray-light);
+            border-bottom: 1px solid var(--gray-light);
+            padding: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .calendar-day:hover {
+            background-color: var(--primary-light);
+        }
+
+        .calendar-day.other-month {
+            background-color: #f8f9fa;
+            color: #adb5bd;
+        }
+
+        .calendar-day.today {
+            background-color: rgba(91, 107, 240, 0.1);
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .post-count {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .post-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+        }
+
+        .platform-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+
+        .facebook {
+            background-color: #3b5998;
+        }
+
+        .twitter {
+            background-color: #1da1f2;
+        }
+
+        .instagram {
+            background-color: #e1306c;
+        }
+
+        .linkedin {
+            background-color: #0077b5;
+        }
+
+        /* Week View */
+        .week-view {
+            display: none;
+        }
+
+        .week-view.active {
+            display: block;
+        }
+
+        .week-header {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            background-color: var(--light);
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+        }
+
+        .time-slot {
+            padding: 10px;
+            border-right: 1px solid var(--gray-light);
+            border-bottom: 1px solid var(--gray-light);
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .week-day {
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .week-cell {
+            min-height: 80px;
+            border-right: 1px solid var(--gray-light);
+            border-bottom: 1px solid var(--gray-light);
+            padding: 5px;
+            position: relative;
+        }
+
+        /* List View */
+        .list-view {
+            display: none;
+        }
+
+        .list-view.active {
+            display: block;
+        }
+
+        .list-header {
+            display: grid;
+            grid-template-columns: 120px 100px 1fr 100px 80px;
+            padding: 15px 20px;
+            background-color: var(--light);
+            border-bottom: 1px solid var(--gray-light);
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .list-items {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .list-item {
+            display: grid;
+            grid-template-columns: 120px 100px 1fr 100px 80px;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            align-items: center;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .list-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        .list-date {
+            font-weight: 500;
+        }
+
+        .list-platform {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-content {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .list-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .post-card {
+            background-color: white;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-left: 3px solid var(--primary);
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: transform 0.2s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-card.scheduled {
+            border-left-color: var(--secondary);
+        }
+
+        .post-card.published {
+            border-left-color: var(--success);
+        }
+
+        .post-card.failed {
+            border-left-color: var(--error);
+        }
+
+        .post-platform {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+
+        .post-time {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        /* Drag & Drop Styles */
+        .dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .drag-over {
+            background-color: rgba(91, 107, 240, 0.2) !important;
+            border: 2px dashed var(--primary) !important;
+        }
+
+        .post-card {
+            cursor: grab;
+        }
+
+        .post-card:active {
+            cursor: grabbing;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid var(--success);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+            max-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-message {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: white;
+            padding: 25px 30px;
+            border-top: 1px solid var(--gray-light);
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: all 0.3s ease;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-company {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .copyright {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .post-detail {
+            margin-bottom: 20px;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .post-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-scheduled {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: var(--secondary);
+        }
+
+        .status-published {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .post-content {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: var(--dark);
+        }
+
+        .post-media {
+            margin-bottom: 20px;
+        }
+
+        .post-media img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-danger {
+            background-color: var(--error);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .footer {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .month-grid, .week-grid {
+                overflow-x: auto;
+            }
+
+            .calendar-day {
+                min-width: 120px;
+            }
+
+            .footer-content {
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+            }
+
+            /* Mobile list view */
+            .list-header, .list-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .list-header {
+                display: none;
+            }
+            
+            .list-item {
+                padding: 15px;
+                border: 1px solid var(--gray-light);
+                margin: 10px;
+                border-radius: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .calendar-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .calendar-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .filters {
+                flex-wrap: wrap;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .header-title {
+                font-size: 1.2rem;
+            }
+
+            .footer {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-actions {
+                gap: 10px;
+            }
+
+            .new-post-btn span {
+                display: none;
+            }
+
+            .profile-dropdown span {
+                display: none;
+            }
+            
+            .profile-img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .footer {
+                padding: 15px;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .view-toggle {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="logo">
+                    <i class="fas fa-share-alt"></i>
+                    <span class="menu-text">SocialCraft</span>
+                </a>
+                <button class="toggle-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-th-large"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="Calender.html" class="menu-item active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="menu-text">Calendar</span>
+                </a>
+                <a href="Composer.html" class="menu-item">
+                    <i class="fas fa-edit"></i>
+                    <span class="menu-text">Composer</span>
+                </a>
+                <a href="media-library.html" class="menu-item">
+                    <i class="fas fa-photo-video"></i>
+                    <span class="menu-text">Media Library</span>
+                </a>
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">Settings/Integrations</span>
+                </a>
+                <!-- <a href="integrations.html" class="menu-item">
+                    <i class="fas fa-plug"></i>
+                    <span class="menu-text">Integrations</span>
+                </a> -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+        <div class="header">
+    <div class="header-left">
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="header-title">Calender</h1>
+    </div>
+    <div class="header-actions">
+        <a href="Composer.html" class="new-post-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-plus"></i>
+            <span>New Post</span>
+        </a>
+        <div class="profile-dropdown">
+            <div class="profile-img">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="Mudasir">
+            </div>
+            <span class="profile-name">Mudasir</span>
+            <i class="fas fa-chevron-down profile-arrow"></i>
+            <div class="profile-menu">
+                <a href="profile.html" class="profile-menu-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="settings.html" class="profile-menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="help.html" class="profile-menu-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+                <a href="logout.html" class="profile-menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Content -->
+            <div class="content">
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <div class="calendar-controls">
+                            <div class="view-toggle">
+                                <button class="active" id="monthViewBtn">Month</button>
+                                <button id="weekViewBtn">Week</button>
+                                <button id="listViewBtn">List</button>
+                            </div>
+                            <div class="month-navigation">
+                                <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                                <div class="current-month" id="currentMonth">November 2023</div>
+                                <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filters">
+                        <select class="filter-select" id="platformFilter">
+                            <option value="all">All Platforms</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="linkedin">LinkedIn</option>
+                        </select>
+                        <select class="filter-select" id="accountFilter">
+                            <option value="all">All Accounts</option>
+                            <option value="main">Main Account</option>
+                            <option value="business">Business Account</option>
+                            <option value="personal">Personal Account</option>
+                        </select>
+                        <select class="filter-select" id="statusFilter">
+                            <option value="all">All Statuses</option>
+                            <option value="scheduled">Scheduled</option>
+                            <option value="published">Published</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                    </div>
+
+                    <!-- Month View -->
+                    <div class="month-view active" id="monthView">
+                        <div class="month-header">
+                            <div class="day-header">Sun</div>
+                            <div class="day-header">Mon</div>
+                            <div class="day-header">Tue</div>
+                            <div class="day-header">Wed</div>
+                            <div class="day-header">Thu</div>
+                            <div class="day-header">Fri</div>
+                            <div class="day-header">Sat</div>
+                        </div>
+                        <div class="month-grid" id="monthGrid">
+                            <!-- Calendar days will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Week View -->
+                    <div class="week-view" id="weekView">
+                        <div class="week-header" id="weekHeader">
+                            <!-- Week header will be populated by JavaScript -->
+                        </div>
+                        <div class="week-grid" id="weekGrid">
+                            <!-- Time slots and posts will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- List View -->
+                    <div class="list-view" id="listView">
+                        <div class="list-header">
+                            <div class="list-date">Date</div>
+                            <div class="list-platform">Platform</div>
+                            <div class="list-content">Content</div>
+                            <div class="list-status">Status</div>
+                            <div class="list-actions">Actions</div>
+                        </div>
+                        <div class="list-items" id="listItems">
+                            <!-- List items will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-company">
+                <i class="fas fa-share-alt"></i>
+                <span>SocialCraft - Content Management Platform</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="help.html">Help Center</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="copyright">
+                &copy; 2023 SocialCraft. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-message" id="toastMessage">Post rescheduled successfully!</div>
+    </div>
+
+    <!-- Post Detail Modal -->
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Post Details</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="post-detail" id="postDetail">
+                    <!-- Post details will be populated by JavaScript -->
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" id="editPostBtn"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-outline" id="duplicatePostBtn"><i class="fas fa-copy"></i> Duplicate</button>
+                    <button class="btn btn-danger" id="deletePostBtn"><i class="fas fa-trash"></i> Delete</button>
+                    <button class="btn btn-primary" id="publishNowBtn">Publish Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced sample data for posts
+        let posts = [
+            { id: 1, date: '2023-11-15', time: '10:00', platform: 'facebook', status: 'scheduled', content: 'Product launch announcement! Check out our new features and improvements.', account: 'main', media: 'https://via.placeholder.com/550x300' },
+            { id: 2, date: '2023-11-15', time: '14:30', platform: 'twitter', status: 'scheduled', content: 'Weekly tip: Boost your productivity with these simple tricks! #ProductivityTips', account: 'main', media: '' },
+            { id: 3, date: '2023-11-16', time: '09:15', platform: 'instagram', status: 'published', content: 'Behind the scenes at our photoshoot! Can you guess what we are working on?', account: 'business', media: 'https://via.placeholder.com/550x300' },
+            { id: 4, date: '2023-11-18', time: '16:45', platform: 'linkedin', status: 'scheduled', content: 'Company news: We are excited to announce our partnership with TechCorp!', account: 'business', media: '' },
+            { id: 5, date: '2023-11-20', time: '11:20', platform: 'facebook', status: 'scheduled', content: 'Event reminder: Join us for our webinar next week! Limited seats available.', account: 'personal', media: 'https://via.placeholder.com/550x300' },
+            { id: 6, date: '2023-11-22', time: '13:00', platform: 'twitter', status: 'scheduled', content: 'Industry insights: The future of digital marketing in 2024. What to expect?', account: 'main', media: '' },
+            { id: 7, date: '2023-11-25', time: '15:30', platform: 'instagram', status: 'draft', content: 'New product teaser coming soon! Stay tuned for the big reveal.', account: 'business', media: 'https://via.placeholder.com/550x300' }
+        ];
+
+        // DOM Elements
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+        const toggleBtn = document.querySelector('.toggle-btn');
+        const monthViewBtn = document.getElementById('monthViewBtn');
+        const weekViewBtn = document.getElementById('weekViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const monthView = document.getElementById('monthView');
+        const weekView = document.getElementById('weekView');
+        const listView = document.getElementById('listView');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const currentMonthEl = document.getElementById('currentMonth');
+        const monthGrid = document.getElementById('monthGrid');
+        const weekHeader = document.getElementById('weekHeader');
+        const weekGrid = document.getElementById('weekGrid');
+        const listItems = document.getElementById('listItems');
+        const postModal = document.getElementById('postModal');
+        const closeModal = document.getElementById('closeModal');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        const platformFilter = document.getElementById('platformFilter');
+        const accountFilter = document.getElementById('accountFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        const newPostBtn = document.getElementById('newPostBtn');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const postDetail = document.getElementById('postDetail');
+        const modalTitle = document.getElementById('modalTitle');
+        const editPostBtn = document.getElementById('editPostBtn');
+        const duplicatePostBtn = document.getElementById('duplicatePostBtn');
+        const deletePostBtn = document.getElementById('deletePostBtn');
+        const publishNowBtn = document.getElementById('publishNowBtn');
+
+        // Current date and view state
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        let currentWeekStart = new Date(currentDate);
+        currentWeekStart.setDate(currentDate.getDate() - currentDate.getDay());
+        let selectedPost = null;
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+        });
+
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Profile dropdown functionality
+        profileDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('active');
+        });
+
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function() {
+            profileDropdown.classList.remove('active');
+        });
+
+        // Switch between views
+        function switchView(activeView) {
+            // Remove active class from all views and buttons
+            [monthViewBtn, weekViewBtn, listViewBtn].forEach(btn => btn.classList.remove('active'));
+            [monthView, weekView, listView].forEach(view => view.classList.remove('active'));
+            
+            // Add active class to selected view and button
+            activeView.view.classList.add('active');
+            activeView.btn.classList.add('active');
+            
+            // Render the selected view
+            if (activeView.view === listView) {
+                renderListView();
+            } else if (activeView.view === weekView) {
+                renderWeekView();
+            } else {
+                renderCalendar();
+            }
+        }
+
+        monthViewBtn.addEventListener('click', () => switchView({view: monthView, btn: monthViewBtn}));
+        weekViewBtn.addEventListener('click', () => switchView({view: weekView, btn: weekViewBtn}));
+        listViewBtn.addEventListener('click', () => switchView({view: listView, btn: listViewBtn}));
+
+        // Navigate months
+        prevMonthBtn.addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+
+        // Navigate weeks
+        function navigateWeek(direction) {
+            currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+            renderWeekView();
+        }
+
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            postModal.classList.remove('active');
+            selectedPost = null;
+        });
+
+        // Filter functionality
+        [platformFilter, accountFilter, statusFilter].forEach(filter => {
+            filter.addEventListener('change', () => {
+                if (monthView.classList.contains('active')) {
+                    renderCalendar();
+                } else if (weekView.classList.contains('active')) {
+                    renderWeekView();
+                } else {
+                    renderListView();
+                }
+            });
+        });
+
+        // New Post button
+        newPostBtn.addEventListener('click', () => {
+            showToast('Redirecting to post composer...');
+            // In a real app, this would redirect to the composer page
+        });
+
+        // Modal actions
+        editPostBtn.addEventListener('click', () => {
+            if (selectedPost) {
+                showToast('Opening post editor...');
+                // In a real app, this would open the editor with the selected post
+            }
+        });
+
+        duplicatePostBtn.addEventListener('click', () => {
+            if (selectedPost) {
+                const newPost = {
+                    ...selectedPost,
+                    id: Math.max(...posts.map(p => p.id)) + 1,
+                    date: formatDate(new Date()),
+                    time: '12:00',
+                    status: 'draft'
+                };
+                posts.push(newPost);
+                refreshAllViews();
+                showToast('Post duplicated successfully!');
+                postModal.classList.remove('active');
+            }
+        });
+
+        deletePostBtn.addEventListener('click', () => {
+            if (selectedPost && confirm('Are you sure you want to delete this post?')) {
+                posts = posts.filter(p => p.id !== selectedPost.id);
+                refreshAllViews();
+                showToast('Post deleted successfully!');
+                postModal.classList.remove('active');
+            }
+        });
+
+        publishNowBtn.addEventListener('click', () => {
+            if (selectedPost) {
+                selectedPost.status = 'published';
+                selectedPost.date = formatDate(new Date());
+                selectedPost.time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                refreshAllViews();
+                showToast('Post published immediately!');
+                postModal.classList.remove('active');
+            }
+        });
+
+        // Get filtered posts based on current filters
+        function getFilteredPosts() {
+            const platform = platformFilter.value;
+            const account = accountFilter.value;
+            const status = statusFilter.value;
+
+            return posts.filter(post => {
+                return (platform === 'all' || post.platform === platform) &&
+                       (account === 'all' || post.account === account) &&
+                       (status === 'all' || post.status === status);
+            });
+        }
+
+        // Render calendar
+        function renderCalendar() {
+            // Update current month display
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            currentMonthEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+            // Clear previous calendar
+            monthGrid.innerHTML = '';
+
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+
+            // Add days from previous month
+            const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+            for (let i = 0; i < startingDay; i++) {
+                const dayElement = createDayElement(prevMonthLastDay - startingDay + i + 1, true);
+                monthGrid.appendChild(dayElement);
+            }
+
+            // Add days of current month
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const isToday = i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+                const dayElement = createDayElement(i, false, isToday);
+                monthGrid.appendChild(dayElement);
+            }
+
+            // Add days from next month to complete the grid
+            const totalCells = 42; // 6 rows x 7 days
+            const remainingCells = totalCells - (startingDay + daysInMonth);
+            for (let i = 1; i <= remainingCells; i++) {
+                const dayElement = createDayElement(i, true);
+                monthGrid.appendChild(dayElement);
+            }
+
+            // Initialize drag and drop for post cards
+            initializeDragAndDrop();
+        }
+
+        function createDayElement(dayNumber, isOtherMonth, isToday = false) {
+            const dayElement = document.createElement('div');
+            dayElement.className = `calendar-day ${isOtherMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}`;
+            
+            // Format date for comparison
+            const dateStr = isOtherMonth ? '' : `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`;
+            
+            // Find posts for this day
+            const filteredPosts = getFilteredPosts();
+            const dayPosts = isOtherMonth ? [] : filteredPosts.filter(post => post.date === dateStr);
+            
+            dayElement.innerHTML = `
+                <div class="day-number">${dayNumber}</div>
+                <div class="post-count">${dayPosts.length} posts</div>
+                <div class="post-preview">
+                    ${dayPosts.map(post => 
+                        `<div class="platform-icon ${post.platform}" data-post-id="${post.id}">
+                            <i class="fab fa-${post.platform}"></i>
+                        </div>`
+                    ).join('')}
+                </div>
+            `;
+            
+            // Add click event to show posts for this day
+            if (dayPosts.length > 0) {
+                dayElement.addEventListener('click', () => {
+                    showPostsForDay(dateStr, dayPosts);
+                });
+            }
+            
+            // Add drag and drop events
+            if (!isOtherMonth) {
+                dayElement.addEventListener('dragover', handleDragOver);
+                dayElement.addEventListener('drop', (e) => handleDrop(e, dateStr));
+            }
+            
+            return dayElement;
+        }
+
+        function showPostsForDay(dateStr, dayPosts) {
+            const date = new Date(dateStr);
+            const formattedDate = date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            postDetail.innerHTML = `
+                <div class="post-meta">
+                    <div class="post-status status-scheduled">${dayPosts.length} Posts</div>
+                    <div class="post-time">${formattedDate}</div>
+                </div>
+                ${dayPosts.map(post => `
+                    <div class="post-platform" style="margin-bottom: 15px; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px;">
+                        <div class="platform-icon ${post.platform}"><i class="fab fa-${post.platform}"></i></div>
+                        <span style="margin-left: 8px;">${post.platform.charAt(0).toUpperCase() + post.platform.slice(1)} - ${post.account} Account</span>
+                        <div style="margin-top: 5px; font-size: 0.8rem; color: var(--gray);">${post.time} - ${post.status}</div>
+                        <div style="margin-top: 5px;">${post.content}</div>
+                    </div>
+                `).join('')}
+            `;
+            
+            modalTitle.textContent = `Posts for ${formattedDate}`;
+            postModal.classList.add('active');
+        }
+
+        // Render week view
+        function renderWeekView() {
+            // Clear previous week view
+            weekHeader.innerHTML = '';
+            weekGrid.innerHTML = '';
+
+            // Create week header
+            weekHeader.innerHTML = '<div class="time-slot">Time</div>';
+            const weekDays = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(currentWeekStart);
+                day.setDate(currentWeekStart.getDate() + i);
+                const isToday = isSameDay(day, new Date());
+                
+                weekHeader.innerHTML += `
+                    <div class="week-day ${isToday ? 'today' : ''}">
+                        ${day.toLocaleDateString('en-US', { weekday: 'short' })}<br>
+                        <span class="date">${day.getDate()}</span>
+                    </div>
+                `;
+                weekDays.push(formatDate(day));
+            }
+
+            // Create time slots
+            for (let hour = 8; hour <= 20; hour++) {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = `${hour}:00`;
+                weekGrid.appendChild(timeSlot);
+
+                // Create cells for each day
+                for (let day = 0; day < 7; day++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'week-cell';
+                    
+                    // Add drag and drop events
+                    cell.addEventListener('dragover', handleDragOver);
+                    cell.addEventListener('drop', (e) => handleDrop(e, weekDays[day], `${hour}:00`));
+                    
+                    // Add posts for this time slot
+                    const filteredPosts = getFilteredPosts();
+                    const timePosts = filteredPosts.filter(post => 
+                        post.date === weekDays[day] && 
+                        parseInt(post.time.split(':')[0]) === hour
+                    );
+                    
+                    timePosts.forEach(post => {
+                        const postCard = createPostCard(post);
+                        cell.appendChild(postCard);
+                    });
+                    
+                    weekGrid.appendChild(cell);
+                }
+            }
+
+            // Update current month display for week view
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            const weekEnd = new Date(currentWeekStart);
+            weekEnd.setDate(currentWeekStart.getDate() + 6);
+            currentMonthEl.textContent = `${monthNames[currentWeekStart.getMonth()]} ${currentWeekStart.getDate()} - ${monthNames[weekEnd.getMonth()]} ${weekEnd.getDate()}, ${currentWeekStart.getFullYear()}`;
+
+            // Add week navigation
+            prevMonthBtn.onclick = () => navigateWeek(-1);
+            nextMonthBtn.onclick = () => navigateWeek(1);
+
+            // Initialize drag and drop
+            initializeDragAndDrop();
+        }
+
+        // Render list view
+        function renderListView() {
+            // Clear previous list view
+            listItems.innerHTML = '';
+
+            const filteredPosts = getFilteredPosts();
+            
+            filteredPosts.forEach(post => {
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+                listItem.innerHTML = `
+                    <div class="list-date">${formatDisplayDate(post.date)} ${post.time}</div>
+                    <div class="list-platform">
+                        <div class="platform-icon ${post.platform}">
+                            <i class="fab fa-${post.platform}"></i>
+                        </div>
+                        <span>${post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}</span>
+                    </div>
+                    <div class="list-content">${post.content}</div>
+                    <div class="list-status">
+                        <span class="post-status status-${post.status}">${post.status.charAt(0).toUpperCase() + post.status.slice(1)}</span>
+                    </div>
+                    <div class="list-actions">
+                        <button class="btn btn-outline" data-post-id="${post.id}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-outline" data-post-id="${post.id}"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                
+                listItem.addEventListener('click', (e) => {
+                    if (!e.target.closest('button')) {
+                        showPostDetails(post);
+                    }
+                });
+
+                // Add event listeners for action buttons
+                const editBtn = listItem.querySelector('.btn-outline:first-child');
+                const deleteBtn = listItem.querySelector('.btn-outline:last-child');
+                
+                editBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showToast('Editing post...');
+                });
+                
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm('Are you sure you want to delete this post?')) {
+                        posts = posts.filter(p => p.id !== post.id);
+                        refreshAllViews();
+                        showToast('Post deleted successfully!');
+                    }
+                });
+                
+                listItems.appendChild(listItem);
+            });
+        }
+
+        function createPostCard(post) {
+            const postCard = document.createElement('div');
+            postCard.className = `post-card ${post.status}`;
+            postCard.innerHTML = `
+                <div class="post-platform">
+                    <div class="platform-icon ${post.platform}" data-post-id="${post.id}">
+                        <i class="fab fa-${post.platform}"></i>
+                    </div>
+                </div>
+                <div class="post-time">${post.time}</div>
+                ${post.content.substring(0, 30)}${post.content.length > 30 ? '...' : ''}
+            `;
+            postCard.setAttribute('draggable', 'true');
+            postCard.setAttribute('data-post-id', post.id);
+            postCard.addEventListener('click', () => {
+                showPostDetails(post);
+            });
+            return postCard;
+        }
+
+        function showPostDetails(post) {
+            selectedPost = post;
+            modalTitle.textContent = 'Post Details';
+            postDetail.innerHTML = `
+                <div class="post-meta">
+                    <div class="post-status status-${post.status}">${post.status.charAt(0).toUpperCase() + post.status.slice(1)}</div>
+                    <div class="post-time">${formatDisplayDate(post.date)} at ${post.time}</div>
+                </div>
+                <div class="post-platform">
+                    <div class="platform-icon ${post.platform}"><i class="fab fa-${post.platform}"></i></div>
+                    <span style="margin-left: 8px;">${post.platform.charAt(0).toUpperCase() + post.platform.slice(1)} - ${post.account} Account</span>
+                </div>
+                <div class="post-content">
+                    <p>${post.content}</p>
+                </div>
+                ${post.media ? `
+                <div class="post-media">
+                    <img src="${post.media}" alt="Post media">
+                </div>
+                ` : ''}
+            `;
+            postModal.classList.add('active');
+        }
+
+        // Utility functions
+        function formatDate(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatDisplayDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        function isSameDay(date1, date2) {
+            return date1.getDate() === date2.getDate() &&
+                   date1.getMonth() === date2.getMonth() &&
+                   date1.getFullYear() === date2.getFullYear();
+        }
+
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function refreshAllViews() {
+            if (monthView.classList.contains('active')) {
+                renderCalendar();
+            } else if (weekView.classList.contains('active')) {
+                renderWeekView();
+            } else {
+                renderListView();
+            }
+        }
+
+        // Drag and Drop functionality
+        function initializeDragAndDrop() {
+            const postCards = document.querySelectorAll('.post-card, .platform-icon');
+            
+            postCards.forEach(card => {
+                card.setAttribute('draggable', 'true');
+                
+                card.addEventListener('dragstart', (e) => {
+                    const postId = card.dataset.postId || card.closest('[data-post-id]')?.dataset.postId;
+                    if (postId) {
+                        e.dataTransfer.setData('text/plain', postId);
+                        card.classList.add('dragging');
+                    }
+                });
+                
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                });
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        }
+
+        function handleDrop(e, newDate, newTime = '12:00') {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            const postId = e.dataTransfer.getData('text/plain');
+            const post = posts.find(p => p.id == postId);
+            
+            if (post) {
+                post.date = newDate;
+                if (newTime) post.time = newTime;
+                refreshAllViews();
+                showToast('Post rescheduled successfully!');
+            }
+        }
+
+        // Initialize calendar and drag & drop
+        renderCalendar();
+        initializeDragAndDrop();
+    </script>
+</body>
+</html>

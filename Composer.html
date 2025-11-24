@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialCraft - Composer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5b6bf0;
+            --primary-light: #eef0ff;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            color: var(--dark);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            border-right: 1px solid var(--gray-light);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: var(--header-height);
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray);
+            border-left: 3px solid transparent;
+            margin: 2px 0;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+            text-decoration: none;
+        }
+
+        .menu-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-text {
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--dark);
+            cursor: pointer;
+            margin-right: 12px;
+            display: none;
+        }
+
+        .header-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .new-post-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(91, 107, 240, 0.3);
+            font-size: 0.85rem;
+        }
+
+        .new-post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(91, 107, 240, 0.4);
+        }
+
+        .profile-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .profile-dropdown:hover {
+            background-color: var(--primary-light);
+        }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .profile-arrow {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .profile-dropdown.active .profile-arrow {
+            transform: rotate(180deg);
+        }
+
+        .profile-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            padding: 8px 0;
+            margin-top: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 1px solid var(--gray-light);
+        }
+
+        .profile-dropdown.active .profile-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-menu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: var(--dark);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .profile-menu-item:hover {
+            background-color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        .profile-menu-item i {
+            width: 16px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        /* Composer Container */
+        .composer-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid var(--gray-light);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 140px);
+        }
+
+        .composer-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .composer-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .composer-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .composer-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Content Editor */
+        .content-editor {
+            flex: 1;
+            padding: 20px;
+            border-right: 1px solid var(--gray-light);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .editor-section {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Text Editor */
+        .text-editor {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 6px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .toolbar-btn {
+            background: none;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .content-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .content-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .character-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .character-counter.warning {
+            color: var(--warning);
+        }
+
+        .character-counter.error {
+            color: var(--error);
+        }
+
+        /* Media Upload */
+        .media-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray-light);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .upload-area i {
+            font-size: 2rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .media-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .media-thumbnail {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .media-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-media {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+
+        /* Platform Tabs */
+        .platform-tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .platform-tab {
+            padding: 10px 15px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--gray);
+            transition: all 0.2s;
+        }
+
+        .platform-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .platform-tab i {
+            font-size: 1rem;
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--gray-light);
+        }
+
+        .preview-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .preview-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .platform-preview {
+            display: none;
+        }
+
+        .platform-preview.active {
+            display: block;
+        }
+
+        /* Preview Cards */
+        .preview-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .facebook-preview {
+            border: 1px solid #e0e0e0;
+        }
+
+        .twitter-preview {
+            border: 1px solid #e0e0e0;
+        }
+
+        .instagram-preview {
+            border: 1px solid #e0e0e0;
+        }
+
+        .linkedin-preview {
+            border: 1px solid #e0e0e0;
+        }
+
+        .preview-header-card {
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .preview-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .preview-user {
+            flex: 1;
+        }
+
+        .preview-username {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .preview-time {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .preview-body {
+            padding: 12px;
+        }
+
+        .preview-text {
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .preview-media {
+            margin-bottom: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .preview-media img {
+            width: 100%;
+            display: block;
+        }
+
+        .preview-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray);
+            padding-top: 10px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        /* Scheduling Panel */
+        .scheduling-panel {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .scheduling-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .schedule-option {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .schedule-option.active {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .datetime-picker {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .date-input, .time-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .queue-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        /* AI Assistance Panel */
+        .ai-panel {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .ai-suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ai-suggestion {
+            padding: 10px;
+            background-color: white;
+            border-radius: 6px;
+            border: 1px solid var(--gray-light);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ai-suggestion:hover {
+            border-color: var(--primary);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: white;
+            padding: 25px 30px;
+            border-top: 1px solid var(--gray-light);
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: all 0.3s ease;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-company {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .copyright {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-danger {
+            background-color: var(--error);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .footer {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .composer-body {
+                flex-direction: column;
+            }
+
+            .preview-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--gray-light);
+            }
+
+            .footer-content {
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .composer-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .composer-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .header-title {
+                font-size: 1.2rem;
+            }
+
+            .footer {
+                padding: 20px;
+            }
+
+            .platform-tabs {
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-actions {
+                gap: 10px;
+            }
+
+            .new-post-btn span {
+                display: none;
+            }
+
+            .profile-dropdown span {
+                display: none;
+            }
+            
+            .profile-img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .footer {
+                padding: 15px;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .datetime-picker {
+                flex-direction: column;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="logo">
+                    <i class="fas fa-share-alt"></i>
+                    <span class="menu-text">SocialCraft</span>
+                </a>
+                <button class="toggle-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-th-large"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="Calender.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="menu-text">Calendar</span>
+                </a>
+                <a href="Composer.html" class="menu-item active">
+                    <i class="fas fa-edit"></i>
+                    <span class="menu-text">Composer</span>
+                </a>
+                <a href="media-library.html" class="menu-item">
+                    <i class="fas fa-photo-video"></i>
+                    <span class="menu-text">Media Library</span>
+                </a>
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">Settings/Integrations</span>
+                </a>
+                <!-- <a href="integrations.html" class="menu-item">
+                    <i class="fas fa-plug"></i>
+                    <span class="menu-text">Integrations</span>
+                </a> -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+        <div class="header">
+    <div class="header-left">
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="header-title">Composer</h1>
+    </div>
+    <div class="header-actions">
+        <a href="Composer.html" class="new-post-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-plus"></i>
+            <span>New Post</span>
+        </a>
+        <div class="profile-dropdown">
+            <div class="profile-img">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="Mudasir">
+            </div>
+            <span class="profile-name">Mudasir</span>
+            <i class="fas fa-chevron-down profile-arrow"></i>
+            <div class="profile-menu">
+                <a href="profile.html" class="profile-menu-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="settings.html" class="profile-menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="help.html" class="profile-menu-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+                <a href="logout.html" class="profile-menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Content -->
+            <div class="content">
+                <div class="composer-container">
+                    <div class="composer-header">
+                        <h2 class="composer-title">Create New Post</h2>
+                        <div class="composer-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-save"></i>
+                                Save Draft
+                            </button>
+                            <button class="btn btn-primary" id="schedulePostBtn">
+                                <i class="fas fa-calendar-plus"></i>
+                                Schedule Post
+                            </button>
+                        </div>
+                    </div>
+                    <div class="composer-body">
+                        <!-- Content Editor -->
+                        <div class="content-editor">
+                            <!-- Global Content Textarea -->
+                            <div class="editor-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-pencil-alt"></i>
+                                    Post Content
+                                </h3>
+                                <div class="text-editor">
+                                    <div class="editor-toolbar">
+                                        <button class="toolbar-btn" title="Bold"><i class="fas fa-bold"></i></button>
+                                        <button class="toolbar-btn" title="Italic"><i class="fas fa-italic"></i></button>
+                                        <button class="toolbar-btn" title="Underline"><i class="fas fa-underline"></i></button>
+                                        <button class="toolbar-btn" title="Link"><i class="fas fa-link"></i></button>
+                                        <button class="toolbar-btn" title="Bullet List"><i class="fas fa-list-ul"></i></button>
+                                        <button class="toolbar-btn" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+                                        <button class="toolbar-btn" title="Emoji"><i class="far fa-smile"></i></button>
+                                        <button class="toolbar-btn" title="Hashtag"><i class="fas fa-hashtag"></i></button>
+                                    </div>
+                                    <textarea class="content-textarea" id="postContent" placeholder="What would you like to share?" maxlength="280"></textarea>
+                                    <div class="character-counter" id="characterCounter">0/280</div>
+                                </div>
+                            </div>
+
+                            <!-- Media Upload Section -->
+                            <div class="editor-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-images"></i>
+                                    Media
+                                </h3>
+                                <div class="media-upload">
+                                    <div class="upload-area" id="uploadArea">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Drag & drop images or videos here</p>
+                                        <button class="btn btn-outline">
+                                            <i class="fas fa-folder-open"></i>
+                                            Browse Files
+                                        </button>
+                                        <input type="file" class="file-input" id="fileInput" multiple accept="image/*,video/*">
+                                    </div>
+                                    <div class="media-preview" id="mediaPreview">
+                                        <!-- Media thumbnails will be added here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI Assistance Panel -->
+                            <div class="editor-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-robot"></i>
+                                    AI Assistant
+                                </h3>
+                                <div class="ai-panel">
+                                    <p style="margin-bottom: 15px; color: var(--gray);">Get AI-powered suggestions to improve your post.</p>
+                                    <div class="ai-suggestions">
+                                        <div class="ai-suggestion" data-suggestion="Make it more engaging">
+                                            <i class="fas fa-bolt"></i> Make it more engaging
+                                        </div>
+                                        <div class="ai-suggestion" data-suggestion="Add relevant hashtags">
+                                            <i class="fas fa-hashtag"></i> Add relevant hashtags
+                                        </div>
+                                        <div class="ai-suggestion" data-suggestion="Optimize for Twitter">
+                                            <i class="fab fa-twitter"></i> Optimize for Twitter
+                                        </div>
+                                        <div class="ai-suggestion" data-suggestion="Create a call-to-action">
+                                            <i class="fas fa-hand-point-up"></i> Create a call-to-action
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scheduling Options -->
+                            <div class="editor-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-clock"></i>
+                                    Scheduling
+                                </h3>
+                                <div class="scheduling-panel">
+                                    <div class="scheduling-options">
+                                        <div class="schedule-option active" data-option="now">
+                                            Post Now
+                                        </div>
+                                        <div class="schedule-option" data-option="schedule">
+                                            Schedule
+                                        </div>
+                                        <div class="schedule-option" data-option="queue">
+                                            Add to Queue
+                                        </div>
+                                    </div>
+                                    <div id="scheduleOptions" style="display: none;">
+                                        <div class="datetime-picker">
+                                            <input type="date" class="date-input" id="scheduleDate">
+                                            <input type="time" class="time-input" id="scheduleTime">
+                                        </div>
+                                        <select class="queue-select" id="queueSelect" style="display: none;">
+                                            <option value="">Select Queue Slot</option>
+                                            <option value="morning">Morning (9:00 AM)</option>
+                                            <option value="afternoon">Afternoon (1:00 PM)</option>
+                                            <option value="evening">Evening (6:00 PM)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview Panel -->
+                        <div class="preview-panel">
+                            <div class="preview-header">Preview</div>
+                            <div class="preview-content">
+                                <!-- Platform Tabs -->
+                                <div class="platform-tabs">
+                                    <button class="platform-tab active" data-platform="facebook">
+                                        <i class="fab fa-facebook"></i>
+                                        Facebook
+                                    </button>
+                                    <button class="platform-tab" data-platform="twitter">
+                                        <i class="fab fa-twitter"></i>
+                                        Twitter
+                                    </button>
+                                    <button class="platform-tab" data-platform="instagram">
+                                        <i class="fab fa-instagram"></i>
+                                        Instagram
+                                    </button>
+                                    <button class="platform-tab" data-platform="linkedin">
+                                        <i class="fab fa-linkedin"></i>
+                                        LinkedIn
+                                    </button>
+                                </div>
+
+                                <!-- Platform Previews -->
+                                <div class="platform-preview active" id="facebookPreview">
+                                    <div class="preview-card facebook-preview">
+                                        <div class="preview-header-card">
+                                            <div class="preview-avatar">SC</div>
+                                            <div class="preview-user">
+                                                <div class="preview-username">SocialCraft</div>
+                                                <div class="preview-time">Just now</div>
+                                            </div>
+                                        </div>
+                                        <div class="preview-body">
+                                            <div class="preview-text" id="facebookText">Your post content will appear here...</div>
+                                            <div class="preview-media" id="facebookMedia"></div>
+                                            <div class="preview-stats">
+                                                <span>123 likes</span>
+                                                <span>24 comments</span>
+                                                <span>5 shares</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="platform-preview" id="twitterPreview">
+                                    <div class="preview-card twitter-preview">
+                                        <div class="preview-header-card">
+                                            <div class="preview-avatar">SC</div>
+                                            <div class="preview-user">
+                                                <div class="preview-username">SocialCraft</div>
+                                                <div class="preview-time">Just now</div>
+                                            </div>
+                                        </div>
+                                        <div class="preview-body">
+                                            <div class="preview-text" id="twitterText">Your post content will appear here...</div>
+                                            <div class="preview-media" id="twitterMedia"></div>
+                                            <div class="preview-stats">
+                                                <span>42 Retweets</span>
+                                                <span>128 Likes</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="platform-preview" id="instagramPreview">
+                                    <div class="preview-card instagram-preview">
+                                        <div class="preview-header-card">
+                                            <div class="preview-avatar">SC</div>
+                                            <div class="preview-user">
+                                                <div class="preview-username">socialcraft</div>
+                                                <div class="preview-time">Just now</div>
+                                            </div>
+                                        </div>
+                                        <div class="preview-body">
+                                            <div class="preview-media" id="instagramMedia"></div>
+                                            <div class="preview-text" id="instagramText">Your post content will appear here...</div>
+                                            <div class="preview-stats">
+                                                <span>1,234 likes</span>
+                                                <span>View all 42 comments</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="platform-preview" id="linkedinPreview">
+                                    <div class="preview-card linkedin-preview">
+                                        <div class="preview-header-card">
+                                            <div class="preview-avatar">SC</div>
+                                            <div class="preview-user">
+                                                <div class="preview-username">SocialCraft</div>
+                                                <div class="preview-time">Just now • 🌍</div>
+                                            </div>
+                                        </div>
+                                        <div class="preview-body">
+                                            <div class="preview-text" id="linkedinText">Your post content will appear here...</div>
+                                            <div class="preview-media" id="linkedinMedia"></div>
+                                            <div class="preview-stats">
+                                                <span>42 reactions • 5 comments</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-company">
+                <i class="fas fa-share-alt"></i>
+                <span>SocialCraft - Content Management Platform</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="help.html">Help Center</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="copyright">
+                &copy; 2023 SocialCraft. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+        const toggleBtn = document.querySelector('.toggle-btn');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        const postContent = document.getElementById('postContent');
+        const characterCounter = document.getElementById('characterCounter');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const mediaPreview = document.getElementById('mediaPreview');
+        const platformTabs = document.querySelectorAll('.platform-tab');
+        const platformPreviews = document.querySelectorAll('.platform-preview');
+        const scheduleOptions = document.querySelectorAll('.schedule-option');
+        const scheduleOptionsPanel = document.getElementById('scheduleOptions');
+        const scheduleDate = document.getElementById('scheduleDate');
+        const scheduleTime = document.getElementById('scheduleTime');
+        const queueSelect = document.getElementById('queueSelect');
+        const aiSuggestions = document.querySelectorAll('.ai-suggestion');
+        const schedulePostBtn = document.getElementById('schedulePostBtn');
+
+        // Set default date and time for scheduling
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        scheduleDate.valueAsDate = tomorrow;
+        scheduleTime.value = '09:00';
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+        });
+
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Profile dropdown functionality
+        profileDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('active');
+        });
+
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function() {
+            profileDropdown.classList.remove('active');
+        });
+
+        // Character counter for post content
+        postContent.addEventListener('input', function() {
+            const length = this.value.length;
+            const maxLength = this.getAttribute('maxlength');
+            characterCounter.textContent = `${length}/${maxLength}`;
+            
+            // Update previews
+            updatePreviews(this.value);
+            
+            // Change color based on character count
+            if (length > maxLength * 0.9) {
+                characterCounter.classList.add('warning');
+            } else {
+                characterCounter.classList.remove('warning');
+            }
+            
+            if (length > maxLength) {
+                characterCounter.classList.add('error');
+            } else {
+                characterCounter.classList.remove('error');
+            }
+        });
+
+        // Update all platform previews with content
+        function updatePreviews(content) {
+            document.querySelectorAll('.preview-text').forEach(preview => {
+                preview.textContent = content || 'Your post content will appear here...';
+            });
+        }
+
+        // Platform tab switching
+        platformTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const platform = this.getAttribute('data-platform');
+                
+                // Update active tab
+                platformTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update active preview
+                platformPreviews.forEach(preview => {
+                    preview.classList.remove('active');
+                });
+                document.getElementById(`${platform}Preview`).classList.add('active');
+            });
+        });
+
+        // Schedule option switching
+        scheduleOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const optionType = this.getAttribute('data-option');
+                
+                // Update active option
+                scheduleOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide scheduling options
+                if (optionType === 'now') {
+                    scheduleOptionsPanel.style.display = 'none';
+                } else {
+                    scheduleOptionsPanel.style.display = 'block';
+                    
+                    if (optionType === 'schedule') {
+                        scheduleDate.style.display = 'block';
+                        scheduleTime.style.display = 'block';
+                        queueSelect.style.display = 'none';
+                    } else if (optionType === 'queue') {
+                        scheduleDate.style.display = 'none';
+                        scheduleTime.style.display = 'none';
+                        queueSelect.style.display = 'block';
+                    }
+                }
+            });
+        });
+
+        // File upload functionality
+        uploadArea.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#5b6bf0';
+            this.style.backgroundColor = '#eef0ff';
+        });
+
+        uploadArea.addEventListener('dragleave', function() {
+            this.style.borderColor = '#e2e8f0';
+            this.style.backgroundColor = '';
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#e2e8f0';
+            this.style.backgroundColor = '';
+            
+            if (e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length) {
+                handleFiles(this.files);
+            }
+        });
+
+        function handleFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const mediaThumbnail = document.createElement('div');
+                        mediaThumbnail.className = 'media-thumbnail';
+                        
+                        if (file.type.startsWith('image/')) {
+                            mediaThumbnail.innerHTML = `
+                                <img src="${e.target.result}" alt="Uploaded media">
+                                <button class="remove-media">&times;</button>
+                            `;
+                        } else {
+                            mediaThumbnail.innerHTML = `
+                                <video src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                                <button class="remove-media">&times;</button>
+                            `;
+                        }
+                        
+                        mediaPreview.appendChild(mediaThumbnail);
+                        
+                        // Update previews with media
+                        updatePreviewsWithMedia(e.target.result, file.type);
+                        
+                        // Add remove functionality
+                        const removeBtn = mediaThumbnail.querySelector('.remove-media');
+                        removeBtn.addEventListener('click', function() {
+                            mediaThumbnail.remove();
+                        });
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        function updatePreviewsWithMedia(mediaData, mediaType) {
+            const mediaElements = document.querySelectorAll('.preview-media');
+            
+            mediaElements.forEach(element => {
+                if (mediaType.startsWith('image/')) {
+                    element.innerHTML = `<img src="${mediaData}" alt="Post media">`;
+                } else if (mediaType.startsWith('video/')) {
+                    element.innerHTML = `<video src="${mediaData}" controls style="width: 100%;"></video>`;
+                }
+            });
+        }
+
+        // AI Suggestions
+        aiSuggestions.forEach(suggestion => {
+            suggestion.addEventListener('click', function() {
+                const suggestionText = this.getAttribute('data-suggestion');
+                alert(`AI Suggestion: ${suggestionText}\n\nThis would apply the suggestion to your post in a real implementation.`);
+            });
+        });
+
+        // Schedule Post Button
+        schedulePostBtn.addEventListener('click', function() {
+            const content = postContent.value.trim();
+            
+            if (!content) {
+                alert('Please add some content to your post before scheduling.');
+                return;
+            }
+            
+            const activeOption = document.querySelector('.schedule-option.active').getAttribute('data-option');
+            let scheduleInfo = '';
+            
+            if (activeOption === 'now') {
+                scheduleInfo = 'Post will be published immediately.';
+            } else if (activeOption === 'schedule') {
+                const date = scheduleDate.value;
+                const time = scheduleTime.value;
+                scheduleInfo = `Post scheduled for ${date} at ${time}.`;
+            } else if (activeOption === 'queue') {
+                const queueSlot = queueSelect.value;
+                scheduleInfo = `Post added to ${queueSlot} queue.`;
+            }
+            
+            alert(`Post scheduled successfully!\n\n${scheduleInfo}\n\nIn a real implementation, this would save and schedule your post.`);
+        });
+
+        // Initialize with some sample content
+        postContent.value = "Exciting news! We're launching new features to help you manage your social media more effectively. Stay tuned for the big reveal! #SocialCraft #NewFeatures";
+        postContent.dispatchEvent(new Event('input'));
+    </script>
+</body>
+</html>

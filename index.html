@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialCraft Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5b6bf0;
+            --primary-light: #eef0ff;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            color: var(--dark);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            border-right: 1px solid var(--gray-light);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: var(--header-height);
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray);
+            border-left: 3px solid transparent;
+            margin: 2px 0;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+            text-decoration: none;
+        }
+
+        .menu-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-text {
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--dark);
+            cursor: pointer;
+            margin-right: 12px;
+            display: none;
+        }
+
+        .header-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .new-post-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(91, 107, 240, 0.3);
+            font-size: 0.85rem;
+        }
+
+        .new-post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(91, 107, 240, 0.4);
+        }
+
+        .profile-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .profile-dropdown:hover {
+            background-color: var(--primary-light);
+        }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .profile-arrow {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .profile-dropdown.active .profile-arrow {
+            transform: rotate(180deg);
+        }
+
+        .profile-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            padding: 8px 0;
+            margin-top: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 1px solid var(--gray-light);
+        }
+
+        .profile-dropdown.active .profile-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-menu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: var(--dark);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .profile-menu-item:hover {
+            background-color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        .profile-menu-item i {
+            width: 16px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid var(--gray-light);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .total::before {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .scheduled::before {
+            background: linear-gradient(90deg, var(--secondary), #a855f7);
+        }
+
+        .published::before {
+            background: linear-gradient(90deg, var(--success), #34d399);
+        }
+
+        .failed::before {
+            background: linear-gradient(90deg, var(--error), #f87171);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .total .stat-card-icon {
+            background-color: rgba(91, 107, 240, 0.1);
+            color: var(--primary);
+        }
+
+        .scheduled .stat-card-icon {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: var(--secondary);
+        }
+
+        .published .stat-card-icon {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .failed .stat-card-icon {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .stat-card-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .stat-card-title {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Recent Posts */
+        .section-title {
+            margin: 25px 0 16px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .view-all {
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+            text-decoration: none;
+        }
+
+        .view-all:hover {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .post-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--gray-light);
+        }
+
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .platform {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .platform-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+        }
+
+        .facebook .platform-icon {
+            background-color: #3b5998;
+        }
+
+        .twitter .platform-icon {
+            background-color: #1da1f2;
+        }
+
+        .instagram .platform-icon {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+
+        .linkedin .platform-icon {
+            background-color: #0077b5;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status.published {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status.scheduled {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: var(--secondary);
+        }
+
+        .status.failed {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .post-preview {
+            padding: 14px;
+            min-height: 90px;
+        }
+
+        .post-text {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: var(--dark);
+            font-size: 0.85rem;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100px;
+            background-color: #f0f0f0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+
+        .post-footer {
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        .post-time {
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            transition: color 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .action-btn:hover {
+            color: var(--primary);
+        }
+
+        /* Notifications */
+        .notifications {
+            margin-top: 25px;
+        }
+
+        .notification {
+            background-color: white;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--gray-light);
+            transition: transform 0.2s;
+        }
+
+        .notification:hover {
+            transform: translateX(3px);
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .notification.warning .notification-icon {
+            background-color: var(--warning);
+        }
+
+        .notification.info .notification-icon {
+            background-color: var(--primary);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .notification-message {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .notification-btn {
+            padding: 6px 12px;
+            border-radius: 5px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .notification-btn.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .notification-btn.primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .notification-btn.secondary {
+            background-color: #e9ecef;
+            color: var(--dark);
+        }
+
+        .notification-btn.secondary:hover {
+            background-color: #dee2e6;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: white;
+            padding: 25px 30px;
+            border-top: 1px solid var(--gray-light);
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: all 0.3s ease;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-company {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .copyright {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .footer {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .posts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-content {
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .header-title {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .footer {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-actions {
+                gap: 10px;
+            }
+
+            .new-post-btn span {
+                display: none;
+            }
+
+            .profile-dropdown span {
+                display: none;
+            }
+            
+            .profile-img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .footer {
+                padding: 15px;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+            }
+            
+            .stats-cards {
+                gap: 12px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-card-value {
+                font-size: 1.8rem;
+            }
+            
+            .stat-card-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="logo">
+                    <i class="fas fa-share-alt"></i>
+                    <span class="menu-text">SocialCraft</span>
+                </a>
+                <button class="toggle-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="Calender.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="menu-text">Calendar</span>
+                </a>
+                <a href="Composer.html" class="menu-item">
+                    <i class="fas fa-edit"></i>
+                    <span class="menu-text">Composer</span>
+                </a>
+                <a href="media-library.html" class="menu-item">
+                    <i class="fas fa-photo-video"></i>
+                    <span class="menu-text">Media Library</span>
+                </a>
+                <a href="settings.html" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">Settings/Integrations</span>
+                </a>
+                <!-- <a href="integrations.html" class="menu-item">
+                    <i class="fas fa-plug"></i>
+                    <span class="menu-text">Integrations</span>
+                </a> -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+         <div class="header">
+    <div class="header-left">
+        <button class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="header-title">Dashboard</h1>
+    </div>
+    <div class="header-actions">
+        <a href="Composer.html" class="new-post-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-plus"></i>
+            <span>New Post</span>
+        </a>
+        <div class="profile-dropdown">
+            <div class="profile-img">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80" alt="Mudasir">
+            </div>
+            <span class="profile-name">Mudasir</span>
+            <i class="fas fa-chevron-down profile-arrow"></i>
+            <div class="profile-menu">
+                <a href="profile.html" class="profile-menu-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="settings.html" class="profile-menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="help.html" class="profile-menu-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+                <a href="logout.html" class="profile-menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card total">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-value">142</div>
+                                <div class="stat-card-title">Total Posts</div>
+                            </div>
+                            <div class="stat-card-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card scheduled">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-value">24</div>
+                                <div class="stat-card-title">Scheduled</div>
+                            </div>
+                            <div class="stat-card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card published">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-value">8</div>
+                                <div class="stat-card-title">Published Today</div>
+                            </div>
+                            <div class="stat-card-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card failed">
+                        <div class="stat-card-header">
+                            <div>
+                                <div class="stat-card-value">3</div>
+                                <div class="stat-card-title">Failed</div>
+                            </div>
+                            <div class="stat-card-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Posts -->
+                <div class="section-title">
+                    <h2>Recent Posts</h2>
+                    <a href="all-posts.html" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="posts-grid">
+                    <!-- Post 1 -->
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="platform facebook">
+                                <div class="platform-icon">
+                                    <i class="fab fa-facebook-f"></i>
+                                </div>
+                                <span>Facebook</span>
+                            </div>
+                            <div class="status published">Published</div>
+                        </div>
+                        <div class="post-preview">
+                            <p class="post-text">Exciting news! Our new feature is now live. Check it out and let us know what you think!</p>
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-time">2 hours ago</div>
+                            <div class="post-actions">
+                                <button class="action-btn"><i class="fas fa-chart-bar"></i></button>
+                                <button class="action-btn"><i class="fas fa-ellipsis-h"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post 2 -->
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="platform twitter">
+                                <div class="platform-icon">
+                                    <i class="fab fa-twitter"></i>
+                                </div>
+                                <span>Twitter</span>
+                            </div>
+                            <div class="status scheduled">Scheduled</div>
+                        </div>
+                        <div class="post-preview">
+                            <p class="post-text">Join us for our webinar next week! We'll be discussing the future of content marketing.</p>
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-time">Tomorrow, 10:00 AM</div>
+                            <div class="post-actions">
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post 3 -->
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="platform instagram">
+                                <div class="platform-icon">
+                                    <i class="fab fa-instagram"></i>
+                                </div>
+                                <span>Instagram</span>
+                            </div>
+                            <div class="status failed">Failed</div>
+                        </div>
+                        <div class="post-preview">
+                            <p class="post-text">Behind the scenes at our photoshoot! Can you guess what we're working on?</p>
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-time">Yesterday, 3:45 PM</div>
+                            <div class="post-actions">
+                                <button class="action-btn"><i class="fas fa-redo"></i></button>
+                                <button class="action-btn"><i class="fas fa-info-circle"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post 4 -->
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="platform linkedin">
+                                <div class="platform-icon">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </div>
+                                <span>LinkedIn</span>
+                            </div>
+                            <div class="status published">Published</div>
+                        </div>
+                        <div class="post-preview">
+                            <p class="post-text">We're excited to announce our partnership with TechCorp to bring innovative solutions.</p>
+                        </div>
+                        <div class="post-footer">
+                            <div class="post-time">5 hours ago</div>
+                            <div class="post-actions">
+                                <button class="action-btn"><i class="fas fa-chart-bar"></i></button>
+                                <button class="action-btn"><i class="fas fa-ellipsis-h"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="notifications">
+                    <h2 class="section-title">Notifications</h2>
+                    
+                    <div class="notification warning">
+                        <div class="notification-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">Failed Posts</div>
+                            <div class="notification-message">3 posts failed to publish in the last 24 hours. Check connection settings.</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="notification-btn primary">Review</button>
+                        </div>
+                    </div>
+
+                    <div class="notification info">
+                        <div class="notification-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">Token Reconnect Required</div>
+                            <div class="notification-message">Your Instagram token needs to be reconnected to continue publishing.</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="notification-btn primary">Reconnect</button>
+                            <button class="notification-btn secondary">Later</button>
+                        </div>
+                    </div>
+
+                    <div class="notification info">
+                        <div class="notification-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div class="notification-title">Scheduled Post Confirmation</div>
+                            <div class="notification-message">5 posts are scheduled for publishing in the next 24 hours.</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="notification-btn primary">View Schedule</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-company">
+                <i class="fas fa-share-alt"></i>
+                <span>SocialCraft - Content Management Platform</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="help.html">Help Center</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="copyright">
+                &copy; 2023 SocialCraft. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+        const toggleBtn = document.querySelector('.toggle-btn');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+        });
+
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Menu item active state
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function() {
+                menuItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Close sidebar on mobile after selection
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+
+        // New Post button functionality
+        document.querySelector('.new-post-btn').addEventListener('click', function() {
+            alert('New Post dialog would open here');
+        });
+
+        // Profile dropdown functionality
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        profileDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('active');
+        });
+
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function() {
+            profileDropdown.classList.remove('active');
+        });
+    </script>
+</body>
+</html>
