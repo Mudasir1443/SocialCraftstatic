@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialCraft - Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5b6bf0;
+            --primary-light: #eef0ff;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            color: var(--dark);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            border-right: 1px solid var(--gray-light);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: var(--header-height);
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo:hover {
+            color: var(--primary);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray);
+            border-left: 3px solid transparent;
+            margin: 2px 0;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .menu-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .menu-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+            text-decoration: none;
+        }
+
+        .menu-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-text {
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--dark);
+            cursor: pointer;
+            margin-right: 12px;
+            display: none;
+        }
+
+        .header-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .new-post-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(91, 107, 240, 0.3);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .new-post-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(91, 107, 240, 0.4);
+        }
+
+        .profile-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .profile-dropdown:hover {
+            background-color: var(--primary-light);
+        }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .profile-arrow {
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .profile-dropdown.active .profile-arrow {
+            transform: rotate(180deg);
+        }
+
+        .profile-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            padding: 8px 0;
+            margin-top: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 1px solid var(--gray-light);
+        }
+
+        .profile-dropdown.active .profile-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-menu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: var(--dark);
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .profile-menu-item:hover {
+            background-color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        .profile-menu-item i {
+            width: 16px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 20px;
+            flex: 1;
+        }
+
+        /* Settings Container */
+        .settings-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid var(--gray-light);
+        }
+
+        .settings-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .settings-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .settings-body {
+            display: flex;
+            min-height: 600px;
+        }
+
+        /* Settings Sidebar */
+        .settings-sidebar {
+            width: 250px;
+            border-right: 1px solid var(--gray-light);
+            background-color: var(--light);
+        }
+
+        .settings-nav {
+            padding: 20px 0;
+        }
+
+        .settings-nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray);
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .settings-nav-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .settings-nav-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+            text-decoration: none;
+        }
+
+        .settings-nav-item i {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Settings Content */
+        .settings-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .section-description {
+            color: var(--gray);
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: white;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Workspace Cards */
+        .workspace-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .workspace-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .workspace-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .workspace-details h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .workspace-details p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .plan-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .plan-badge.pro {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: var(--secondary);
+        }
+
+        .plan-badge.business {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        /* Social Accounts */
+        .account-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .account-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .facebook-bg {
+            background-color: #3b5998;
+        }
+
+        .twitter-bg {
+            background-color: #1da1f2;
+        }
+
+        .instagram-bg {
+            background-color: #e1306c;
+        }
+
+        .linkedin-bg {
+            background-color: #0077b5;
+        }
+
+        .account-details h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .account-details p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .account-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-connected {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-disconnected {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-light);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* API Tokens */
+        .token-card {
+            background-color: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .token-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .token-name {
+            font-weight: 600;
+        }
+
+        .token-value {
+            font-family: monospace;
+            background-color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-light);
+            font-size: 0.8rem;
+            word-break: break-all;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--error);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: white;
+            padding: 25px 30px;
+            border-top: 1px solid var(--gray-light);
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: all 0.3s ease;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .footer-company {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .copyright {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                height: 100vh;
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .footer {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .settings-body {
+                flex-direction: column;
+            }
+
+            .settings-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--gray-light);
+            }
+
+            .settings-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 15px 20px;
+            }
+
+            .settings-nav-item {
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 2px solid transparent;
+            }
+
+            .settings-nav-item.active {
+                border-left: none;
+                border-bottom: 2px solid var(--primary);
+            }
+
+            .footer-content {
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 16px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .header-title {
+                font-size: 1.2rem;
+            }
+
+            .footer {
+                padding: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .workspace-card,
+            .account-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .workspace-actions,
+            .account-actions {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-actions {
+                gap: 10px;
+            }
+
+            .new-post-btn span {
+                display: none;
+            }
+
+            .profile-dropdown span {
+                display: none;
+            }
+
+            .profile-img {
+                width: 32px;
+                height: 32px;
+            }
+
+            .footer {
+                padding: 15px;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="logo">
+                    <i class="fas fa-share-alt"></i>
+                    <span class="menu-text">SocialCraft</span>
+                </a>
+                <button class="toggle-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.html" class="menu-item">
+                    <i class="fas fa-th-large"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+                <a href="Calender.html" class="menu-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="menu-text">Calendar</span>
+                </a>
+                <a href="Composer.html" class="menu-item">
+                    <i class="fas fa-edit"></i>
+                    <span class="menu-text">Composer</span>
+                </a>
+                <a href="media-library.html" class="menu-item">
+                    <i class="fas fa-photo-video"></i>
+                    <span class="menu-text">Media Library</span>
+                </a>
+                <a href="settings.html" class="menu-item active">
+                    <i class="fas fa-cog"></i>
+                    <span class="menu-text">Settings/Integrations</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="header-title">Settings/Integrations</h1>
+                </div>
+                <div class="header-actions">
+                    <a href="Composer.html" class="new-post-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-plus"></i>
+                        <span>New Post</span>
+                    </a>
+                    <div class="profile-dropdown">
+                        <div class="profile-img">
+                            <span>MA</span>
+                        </div>
+                        <span class="profile-name">Mudasir</span>
+                        <i class="fas fa-chevron-down profile-arrow"></i>
+                        <div class="profile-menu">
+                            <a href="profile.html" class="profile-menu-item">
+                                <i class="fas fa-user"></i>
+                                <span>Profile</span>
+                            </a>
+                            <a href="settings.html" class="profile-menu-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                            <a href="help.html" class="profile-menu-item">
+                                <i class="fas fa-question-circle"></i>
+                                <span>Help</span>
+                            </a>
+                            <a href="logout.html" class="profile-menu-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <div class="settings-container">
+                    <div class="settings-header">
+                        <h2 class="settings-title">Account Settings</h2>
+                    </div>
+                    <div class="settings-body">
+                        <!-- Settings Sidebar -->
+                        <div class="settings-sidebar">
+                            <div class="settings-nav">
+                                <a href="#" class="settings-nav-item active" data-section="profile">
+                                    <i class="fas fa-user"></i>
+                                    <span>Profile</span>
+                                </a>
+                                <a href="#" class="settings-nav-item" data-section="workspaces">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Workspaces</span>
+                                </a>
+                                <a href="#" class="settings-nav-item" data-section="social-accounts">
+                                    <i class="fas fa-share-alt"></i>
+                                    <span>Social Accounts</span>
+                                </a>
+                                <a href="#" class="settings-nav-item" data-section="notifications">
+                                    <i class="fas fa-bell"></i>
+                                    <span>Notifications</span>
+                                </a>
+                                <a href="#" class="settings-nav-item" data-section="security">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Security</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Settings Content -->
+                        <div class="settings-content">
+                            <!-- Profile Section -->
+                            <div class="settings-section active" id="profile-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-user"></i>
+                                    Profile Settings
+                                </h3>
+                                <p class="section-description">Manage your personal information and account settings</p>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Personal Information</h4>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">First Name</label>
+                                            <input type="text" class="form-input" value="Mudasir">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Last Name</label>
+                                            <input type="text" class="form-input" value="Ahmed">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-input" value="mudasir@example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-input" value="+1 (555) 123-4567">
+                                    </div>
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Save Changes
+                                    </button>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Change Password</h4>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Current Password</label>
+                                        <input type="password" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">New Password</label>
+                                        <input type="password" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-input">
+                                    </div>
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-key"></i>
+                                        Update Password
+                                    </button>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Social Login</h4>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Connected Accounts</label>
+                                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                            <button class="btn btn-outline"
+                                                style="background-color: #3b5998; color: white; border: none;">
+                                                <i class="fab fa-facebook-f"></i>
+                                                Facebook
+                                            </button>
+                                            <button class="btn btn-outline"
+                                                style="background-color: #1da1f2; color: white; border: none;">
+                                                <i class="fab fa-twitter"></i>
+                                                Twitter
+                                            </button>
+                                            <button class="btn btn-outline"
+                                                style="background-color: #4285f4; color: white; border: none;">
+                                                <i class="fab fa-google"></i>
+                                                Google
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Workspaces Section -->
+                            <div class="settings-section" id="workspaces-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-briefcase"></i>
+                                    Workspaces
+                                </h3>
+                                <p class="section-description">Manage your workspaces and team members</p>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Your Workspaces</h4>
+                                        <button class="btn btn-primary btn-sm">
+                                            <i class="fas fa-plus"></i>
+                                            New Workspace
+                                        </button>
+                                    </div>
+
+                                    <div class="workspace-card">
+                                        <div class="workspace-info">
+                                            <div class="workspace-icon">SC</div>
+                                            <div class="workspace-details">
+                                                <h4>SocialCraft Main</h4>
+                                                <p>5 members • Created Jan 15, 2023</p>
+                                            </div>
+                                        </div>
+                                        <div class="workspace-actions">
+                                            <span class="plan-badge pro">Pro Plan</span>
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                                Edit
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="workspace-card">
+                                        <div class="workspace-info">
+                                            <div class="workspace-icon">MC</div>
+                                            <div class="workspace-details">
+                                                <h4>Marketing Campaigns</h4>
+                                                <p>3 members • Created Mar 22, 2023</p>
+                                            </div>
+                                        </div>
+                                        <div class="workspace-actions">
+                                            <span class="plan-badge business">Business</span>
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                                Edit
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="workspace-card">
+                                        <div class="workspace-info">
+                                            <div class="workspace-icon">PP</div>
+                                            <div class="workspace-details">
+                                                <h4>Personal Projects</h4>
+                                                <p>1 member • Created Jun 10, 2023</p>
+                                            </div>
+                                        </div>
+                                        <div class="workspace-actions">
+                                            <span class="plan-badge pro">Free Plan</span>
+                                            <button class="btn btn-outline btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                                Edit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Billing Information</h4>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Current Plan</label>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <span style="font-weight: 600; color: var(--secondary);">Pro Plan</span>
+                                            <span style="color: var(--gray); font-size: 0.9rem;">$29/month</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Next Billing Date</label>
+                                        <p>December 15, 2023</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Payment Method</label>
+                                        <p>Visa ending in 4242 • <a href="#" style="color: var(--primary);">Update</a>
+                                        </p>
+                                    </div>
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-credit-card"></i>
+                                        Manage Subscription
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Social Accounts Section -->
+                            <div class="settings-section" id="social-accounts-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-share-alt"></i>
+                                    Social Accounts
+                                </h3>
+                                <p class="section-description">Connect and manage your social media accounts</p>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Connected Accounts</h4>
+                                        <button class="btn btn-primary btn-sm">
+                                            <i class="fas fa-plus"></i>
+                                            Add Account
+                                        </button>
+                                    </div>
+
+                                    <div class="account-card">
+                                        <div class="account-info">
+                                            <div class="account-icon facebook-bg">
+                                                <i class="fab fa-facebook-f"></i>
+                                            </div>
+                                            <div class="account-details">
+                                                <h4>Facebook</h4>
+                                                <p>SocialCraft Page</p>
+                                            </div>
+                                        </div>
+                                        <div class="account-actions">
+                                            <div class="account-status">
+                                                <span class="status-badge status-connected">Connected</span>
+                                                <button class="btn btn-outline btn-sm">
+                                                    <i class="fas fa-sync"></i>
+                                                    Reconnect
+                                                </button>
+                                                <button class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="account-card">
+                                        <div class="account-info">
+                                            <div class="account-icon twitter-bg">
+                                                <i class="fab fa-twitter"></i>
+                                            </div>
+                                            <div class="account-details">
+                                                <h4>Twitter</h4>
+                                                <p>@socialcraft</p>
+                                            </div>
+                                        </div>
+                                        <div class="account-actions">
+                                            <div class="account-status">
+                                                <span class="status-badge status-connected">Connected</span>
+                                                <button class="btn btn-outline btn-sm">
+                                                    <i class="fas fa-sync"></i>
+                                                    Reconnect
+                                                </button>
+                                                <button class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="account-card">
+                                        <div class="account-info">
+                                            <div class="account-icon instagram-bg">
+                                                <i class="fab fa-instagram"></i>
+                                            </div>
+                                            <div class="account-details">
+                                                <h4>Instagram</h4>
+                                                <p>@socialcraft</p>
+                                            </div>
+                                        </div>
+                                        <div class="account-actions">
+                                            <div class="account-status">
+                                                <span class="status-badge status-pending">Reconnect Needed</span>
+                                                <button class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-plug"></i>
+                                                    Reconnect
+                                                </button>
+                                                <button class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="account-card">
+                                        <div class="account-info">
+                                            <div class="account-icon linkedin-bg">
+                                                <i class="fab fa-linkedin-in"></i>
+                                            </div>
+                                            <div class="account-details">
+                                                <h4>LinkedIn</h4>
+                                                <p>SocialCraft Company</p>
+                                            </div>
+                                        </div>
+                                        <div class="account-actions">
+                                            <div class="account-status">
+                                                <span class="status-badge status-disconnected">Not Connected</span>
+                                                <button class="btn btn-success btn-sm">
+                                                    <i class="fas fa-plug"></i>
+                                                    Connect
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notifications Section -->
+                            <div class="settings-section" id="notifications-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-bell"></i>
+                                    Notifications
+                                </h3>
+                                <p class="section-description">Manage how you receive notifications and alerts</p>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">In-App Notifications</h4>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <label class="form-label">Post Published</label>
+                                            <p style="font-size: 0.8rem; color: var(--gray);">Notify when posts are
+                                                successfully published</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <label class="form-label">Post Failed</label>
+                                            <p style="font-size: 0.8rem; color: var(--gray);">Notify when posts fail to
+                                                publish</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <label class="form-label">Mentions</label>
+                                            <p style="font-size: 0.8rem; color: var(--gray);">Notify when you're
+                                                mentioned in comments</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Email Notifications</h4>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <label class="form-label">Weekly Reports</label>
+                                            <p style="font-size: 0.8rem; color: var(--gray);">Receive weekly performance
+                                                reports</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <label class="form-label">Product Updates</label>
+                                            <p style="font-size: 0.8rem; color: var(--gray);">Receive updates about new
+                                                features</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <label class="form-label">Security Alerts</label>
+                                            <p style="font-size: 0.8rem; color: var(--gray);">Receive security-related
+                                                notifications</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Section -->
+                            <div class="settings-section" id="security-section">
+                                <h3 class="section-title">
+                                    <i class="fas fa-shield-alt"></i>
+                                    Security
+                                </h3>
+                                <p class="section-description">Manage your account security and access controls</p>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Security Settings</h4>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <label class="form-label">Two-Factor Authentication</label>
+                                            <p style="font-size: 0.8rem; color: var(--gray);">Add an extra layer of
+                                                security to your account</p>
+                                        </div>
+                                        <button class="btn btn-primary btn-sm">
+                                            Enable
+                                        </button>
+                                    </div>
+                                    <div class="form-group"
+                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <label class="form-label">Login Notifications</label>
+                                            <p style="font-size: 0.8rem; color: var(--gray);">Get notified of new
+                                                sign-ins</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Role-Based Access</h4>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Your Role</label>
+                                        <p style="font-weight: 600; color: var(--primary);">Workspace Admin</p>
+                                        <p style="font-size: 0.8rem; color: var(--gray);">Full access to all workspace
+                                            features and settings</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Team Members</label>
+                                        <div style="margin-top: 10px;">
+                                            <div
+                                                style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-light);">
+                                                <span>Sarah Johnson</span>
+                                                <span style="color: var(--gray);">Content Manager</span>
+                                            </div>
+                                            <div
+                                                style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-light);">
+                                                <span>Mike Chen</span>
+                                                <span style="color: var(--gray);">Analyst</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                                <span>Emily Davis</span>
+                                                <span style="color: var(--gray);">Contributor</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-users"></i>
+                                        Manage Team
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-company">
+                <i class="fas fa-share-alt"></i>
+                <span>SocialCraft - Content Management Platform</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="help.html">Help Center</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="copyright">
+                &copy; 2023 SocialCraft. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
+        const toggleBtn = document.querySelector('.toggle-btn');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        const settingsNavItems = document.querySelectorAll('.settings-nav-item');
+        const settingsSections = document.querySelectorAll('.settings-section');
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', function () {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+        });
+
+        toggleBtn.addEventListener('click', function () {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        sidebarOverlay.addEventListener('click', function () {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Profile dropdown functionality
+        profileDropdown.addEventListener('click', function (e) {
+            e.stopPropagation();
+            this.classList.toggle('active');
+        });
+
+        // Close profile dropdown when clicking outside
+        document.addEventListener('click', function () {
+            profileDropdown.classList.remove('active');
+        });
+
+        // Settings navigation
+        settingsNavItems.forEach(item => {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Remove active class from all items
+                settingsNavItems.forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+
+                // Add active class to clicked item
+                this.classList.add('active');
+
+                // Get the target section
+                const targetSection = this.getAttribute('data-section');
+
+                // Hide all sections
+                settingsSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Show target section
+                document.getElementById(`${targetSection}-section`).classList.add('active');
+            });
+        });
+
+        // Form submission handlers
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.addEventListener('click', function () {
+                if (this.closest('.card')) {
+                    const cardTitle = this.closest('.card').querySelector('.card-title').textContent;
+                    alert(`${cardTitle} saved successfully!`);
+                }
+            });
+        });
+
+        // Social account actions
+        document.querySelectorAll('.account-actions .btn').forEach(button => {
+            button.addEventListener('click', function () {
+                if (this.classList.contains('btn-success')) {
+                    alert('Connecting social account...');
+                } else if (this.classList.contains('btn-warning')) {
+                    alert('Reconnecting social account...');
+                } else if (this.classList.contains('btn-danger')) {
+                    if (confirm('Are you sure you want to remove this account?')) {
+                        this.closest('.account-card').style.opacity = '0.5';
+                        setTimeout(() => {
+                            alert('Account removed successfully!');
+                        }, 500);
+                    }
+                }
+            });
+        });
+
+        // Workspace actions
+        document.querySelectorAll('.workspace-actions .btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const workspaceName = this.closest('.workspace-card').querySelector('h4').textContent;
+                alert(`Editing ${workspaceName}...`);
+            });
+        });
+    </script>
+</body>
+
+</html>
